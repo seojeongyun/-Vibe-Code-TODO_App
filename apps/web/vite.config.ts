@@ -12,7 +12,7 @@ export default defineConfig({
         enabled: true,
       },
       manifest: {
-        name: 'TODO Heatmap',
+        name: 'TODO',
         short_name: 'TODO',
         display: 'standalone',
         start_url: process.env.BASE_PATH ?? '/',

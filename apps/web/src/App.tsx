@@ -76,6 +76,8 @@ export default function App() {
   const todayLabel = getTodayKST();
   const [view, setView] = useState<'home' | 'daily'>('home');
   const [selectedDate, setSelectedDate] = useState<string>(todayLabel);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [monthState, setMonthState] = useState(() => {
     const { year, month } = parseDateString(todayLabel);
     return { year, month };
@@ -233,17 +235,34 @@ export default function App() {
 
   const handleExport = async () => {
     const data = await exportAllData();
-    console.log('EXPORT_DATA', data);
-    alert('Export 데이터를 콘솔에 출력했습니다.');
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `todo-backup-${todayLabel}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
   };
 
   const handleImport = async () => {
-    const raw = prompt('Import JSON을 붙여넣어 주세요.');
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
-    await importAllData(parsed, 'replace');
-    setDataRevision((v) => v + 1);
-    alert('Import 완료 (replace)');
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const ok = confirm('기존 데이터를 모두 덮어쓰고 복원할까요?');
+      if (!ok) return;
+      await importAllData(parsed, 'replace');
+      setDataRevision((v) => v + 1);
+      alert('Import 완료 (replace)');
+    };
+    input.click();
   };
 
   const handleCheckPersist = async () => {
@@ -375,21 +394,15 @@ export default function App() {
     <div className="app" data-heatmap-theme={theme}>
       <header className="app-header">
         <div>
-          <h1>TODO Heatmap</h1>
-          <p>Timezone: Asia/Seoul</p>
+          <h1>TODO</h1>
         </div>
         <div className="button-row">
-          <button type="button" className="ghost-button" onClick={handleExport}>
-            Export
-          </button>
-          <button type="button" className="ghost-button" onClick={handleImport}>
-            Import (replace)
-          </button>
-          <button type="button" className="ghost-button" onClick={handleCheckPersist}>
-            Persisted?
-          </button>
-          <button type="button" className="ghost-button" onClick={handleRequestPersist}>
-            Persist 요청
+          <button
+            type="button"
+            className="ghost-button"
+            onClick={() => setIsSettingsOpen(true)}
+          >
+            설정
           </button>
         </div>
       </header>
@@ -615,6 +628,59 @@ export default function App() {
             })}
           </div>
         </section>
+      )}
+
+      {isSettingsOpen && (
+        <div className="settings-overlay" onClick={() => setIsSettingsOpen(false)}>
+          <div className="settings-panel" onClick={(event) => event.stopPropagation()}>
+            <div className="settings-header">
+              <div className="panel-title">설정</div>
+              <button
+                type="button"
+                className="ghost-button"
+                onClick={() => setIsSettingsOpen(false)}
+              >
+                닫기
+              </button>
+            </div>
+            <div className="settings-section">
+              <h3>데이터 백업/복원</h3>
+              <div className="button-row">
+                <button type="button" className="ghost-button" onClick={handleExport}>
+                  Export (JSON 다운로드)
+                </button>
+                <button type="button" className="ghost-button" onClick={handleImport}>
+                  Import (JSON 업로드)
+                </button>
+              </div>
+            </div>
+            <div className="settings-section">
+              <h3>About</h3>
+              <p>기준 타임존: Asia/Seoul</p>
+            </div>
+            <div className="settings-section">
+              <button
+                type="button"
+                className="ghost-button"
+                onClick={() => setIsAdvancedOpen((prev) => !prev)}
+              >
+                고급 옵션
+              </button>
+              {isAdvancedOpen && (
+                <div className="advanced-panel">
+                  <div className="button-row">
+                    <button type="button" className="ghost-button" onClick={handleCheckPersist}>
+                      Persisted?
+                    </button>
+                    <button type="button" className="ghost-button" onClick={handleRequestPersist}>
+                      Persist 요청
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
