@@ -11,6 +11,11 @@ export default defineConfig({
       devOptions: {
         enabled: true,
       },
+      workbox: {
+        cleanupOutdatedCaches: true,
+        clientsClaim: false,
+        skipWaiting: false,
+      },
       manifest: {
         name: 'TODO',
         short_name: 'TODO',

@@ -91,6 +91,8 @@ export default function App() {
   });
   const [timeDrafts, setTimeDrafts] = useState<Record<string, TimeDraft>>({});
   const [heatmapYear, setHeatmapYear] = useState<number>(monthState.year);
+  const buildSha = import.meta.env.VITE_BUILD_SHA || 'dev';
+  const buildTime = import.meta.env.VITE_BUILD_TIME || 'dev';
 
   const heatmapRef = useRef<HTMLDivElement | null>(null);
 
@@ -657,6 +659,8 @@ export default function App() {
             <div className="settings-section">
               <h3>About</h3>
               <p>기준 타임존: Asia/Seoul</p>
+              <p>Build: {buildSha}</p>
+              <p>BuiltAt: {buildTime}</p>
             </div>
             <div className="settings-section">
               <button
