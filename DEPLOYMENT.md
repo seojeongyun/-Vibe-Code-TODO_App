@@ -69,6 +69,14 @@ When using `BASE_PATH`, the preview URL will include `/-Vibe-Code-TODO_App/`.
    - DevTools > Application > Manifest에서 아이콘 확인
    - 아이콘이 바뀌지 않으면 uninstall/reinstall
 
+## Cache Troubleshooting (구버전이 보일 때)
+1. 시크릿 창에서 접속
+2. DevTools → Application → Service Workers → Unregister
+3. Hard Reload(Empty Cache and Hard Reload)
+4. 설치된 PWA 앱이면 uninstall 후 reinstall
+5. About의 Build SHA가 바뀌었는지 확인
+6. 그래도 안 되면 Actions 배포 성공 여부 확인
+
 ---
 
 ## Backup Restore
