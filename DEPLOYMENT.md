@@ -77,6 +77,12 @@ When using `BASE_PATH`, the preview URL will include `/-Vibe-Code-TODO_App/`.
 5. About의 Build SHA가 바뀌었는지 확인
 6. 그래도 안 되면 Actions 배포 성공 여부 확인
 
+## 배포 확인 절차
+1. GitHub Actions 배포가 성공(초록)인지 확인
+2. Pages URL 접속 후 최신 화면인지 확인
+3. 설정 > About에서 Build SHA 확인
+4. 설치 아이콘/앱 아이콘이 최신인지 확인
+
 ---
 
 ## Backup Restore
