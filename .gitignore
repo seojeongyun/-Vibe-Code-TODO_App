@@ -1,4 +1,17 @@
+# Node
+node_modules/
 **/node_modules/
+
+# Vite cache
+.vite/
 **/.vite/
-**/dev-dist/
+**/.vite/**
+
+# Build outputs
+dist/
 **/dist/
+dev-dist/
+**/dev-dist/
+
+# OS
+.DS_Store
