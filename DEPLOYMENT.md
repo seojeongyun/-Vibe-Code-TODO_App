@@ -12,6 +12,11 @@
 - Use GitHub Pages URL:
   - `https://<GITHUB_ID>.github.io/-Vibe-Code-TODO_App/`
 
+### Name/Icon Update Note
+- App name/icon updates may not apply to already installed PWA apps.
+- If the name/icon does not change, uninstall the app and reinstall it.
+- This behavior depends on browser cache and OS refresh timing.
+
 ### Local Preview
 ```bash
 cd apps/web
@@ -48,6 +53,21 @@ When using `BASE_PATH`, the preview URL will include `/-Vibe-Code-TODO_App/`.
 
 ### Data Storage Notice
 - Data is stored **locally on each device/browser**. There is no sync between users.
+
+---
+
+## Release Checklist (6/7/8)
+1. GitHub Pages URL 확인
+   - `main` merge 후 GitHub Actions 성공 확인
+   - 배포 완료 시 Pages URL 접속 확인
+2. 설치 가이드 확인
+   - macOS(Chrome/Edge) 설치 방법 동작 확인
+   - iPhone(Safari) 홈 화면 추가 방법 동작 확인
+3. 아이콘 적용 확인
+   - 브라우저 탭 파비콘 확인
+   - 설치된 앱 아이콘 확인
+   - DevTools > Application > Manifest에서 아이콘 확인
+   - 아이콘이 바뀌지 않으면 uninstall/reinstall
 
 ---
 
