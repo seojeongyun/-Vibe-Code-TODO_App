@@ -423,7 +423,13 @@ export default function App() {
     <div className="app" data-heatmap-theme={theme}>
       <header className="app-header">
         <div>
-          <h1>TODO</h1>
+          <button
+            type="button"
+            className="app-title-button"
+            onClick={() => setView('home')}
+          >
+            TODO
+          </button>
         </div>
         <div className="button-row">
           <button
@@ -527,156 +533,167 @@ export default function App() {
       )}
 
       {view === 'daily' && (
-        <section className="daily panel">
-          <div className="panel-header">
-            <div className="panel-title">{selectedDate} TODO</div>
-            <div className="button-row">
-              <button type="button" className="ghost-button" onClick={() => setView('home')}>
-                달력으로
-              </button>
-              <button type="button" className="ghost-button" onClick={handleAddTodo}>
-                새 TODO 추가
-              </button>
+        <>
+          <section className="daily panel">
+            <div className="panel-header">
+              <div className="panel-title">{selectedDate} TODO</div>
+              <div className="button-row">
+                <button type="button" className="ghost-button" onClick={() => setView('home')}>
+                  달력으로
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div className="todo-table">
-            <div className="todo-row todo-row-header">
-              <div></div>
-              <div>시작시간</div>
-              <div>끝시간</div>
-              <div>할 일</div>
-              <div>완료</div>
-              <div>완료 %</div>
-              <div></div>
-            </div>
-            {todos.map((todo) => {
-              const draft = timeDrafts[todo.id] ?? EMPTY_DRAFT;
-              return (
-                <div key={todo.id} className="todo-block">
-                  <div className="todo-row">
-                    <button
-                      type="button"
-                      className="details-toggle"
-                      onClick={() =>
-                        setDetailsOpenById((prev) => ({
-                          ...prev,
-                          [todo.id]: !prev[todo.id],
-                        }))
-                      }
-                      aria-label="상세 토글"
-                    >
-                      {detailsOpenById[todo.id] ? '▲' : '▼'}
-                    </button>
-                    <div className="time-input">
+            <div className="todo-table">
+              <div className="todo-row todo-row-header">
+                <div></div>
+                <div>시작시간</div>
+                <div>끝시간</div>
+                <div>할 일</div>
+                <div>완료</div>
+                <div>완료 %</div>
+                <div></div>
+              </div>
+              {todos.map((todo) => {
+                const draft = timeDrafts[todo.id] ?? EMPTY_DRAFT;
+                return (
+                  <div key={todo.id} className="todo-block">
+                    <div className="todo-row">
+                      <button
+                        type="button"
+                        className="details-toggle"
+                        onClick={() =>
+                          setDetailsOpenById((prev) => ({
+                            ...prev,
+                            [todo.id]: !prev[todo.id],
+                          }))
+                        }
+                        aria-label="상세 토글"
+                      >
+                        {detailsOpenById[todo.id] ? '▲' : '▼'}
+                      </button>
+                      <div className="time-input">
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={2}
+                          value={draft.startHour}
+                          onFocus={selectAllOnFocus}
+                          onChange={(event) =>
+                            handleStartChange(todo, event.target.value, draft.startMinute)
+                          }
+                          onBlur={() => handleStartBlur(todo)}
+                          placeholder="HH"
+                        />
+                        <span>:</span>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={2}
+                          value={draft.startMinute}
+                          onFocus={selectAllOnFocus}
+                          onChange={(event) =>
+                            handleStartChange(todo, draft.startHour, event.target.value)
+                          }
+                          onBlur={() => handleStartBlur(todo)}
+                          placeholder="MM"
+                        />
+                      </div>
+                      <div className="time-input">
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={2}
+                          value={draft.endHour}
+                          onFocus={selectAllOnFocus}
+                          onChange={(event) =>
+                            handleEndChange(todo, event.target.value, draft.endMinute)
+                          }
+                          onBlur={() => handleEndBlur(todo)}
+                          placeholder="HH"
+                        />
+                        <span>:</span>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={2}
+                          value={draft.endMinute}
+                          onFocus={selectAllOnFocus}
+                          onChange={(event) =>
+                            handleEndChange(todo, draft.endHour, event.target.value)
+                          }
+                          onBlur={() => handleEndBlur(todo)}
+                          placeholder="MM"
+                        />
+                      </div>
                       <input
                         type="text"
-                        inputMode="numeric"
-                        maxLength={2}
-                        value={draft.startHour}
+                        value={todo.title}
+                        ref={(el) => {
+                          titleInputRefs.current[todo.id] = el;
+                        }}
                         onFocus={selectAllOnFocus}
-                        onChange={(event) =>
-                          handleStartChange(todo, event.target.value, draft.startMinute)
-                        }
-                        onBlur={() => handleStartBlur(todo)}
-                        placeholder="HH"
+                        onChange={(event) => updateLocal(todo.id, { title: event.target.value })}
+                        onBlur={(event) => handleTitleBlur(todo, event.target.value)}
+                        required
                       />
-                      <span>:</span>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={2}
-                        value={draft.startMinute}
-                        onFocus={selectAllOnFocus}
-                        onChange={(event) =>
-                          handleStartChange(todo, draft.startHour, event.target.value)
-                        }
-                        onBlur={() => handleStartBlur(todo)}
-                        placeholder="MM"
-                      />
+                      <div className="checkbox-cell">
+                        <input
+                          type="checkbox"
+                          className="todo-checkbox"
+                          checked={todo.isDone}
+                          onChange={() => handleToggleDone(todo)}
+                        />
+                      </div>
+                      <div className={`percent-group ${todo.isDone ? '' : 'disabled'}`}>
+                        {PERCENT_OPTIONS.map((value) => (
+                          <button
+                            key={value}
+                            type="button"
+                            className={`percent-button ${todo.percent === value ? 'active' : ''}`}
+                            onClick={() => handlePercentSelect(todo, value)}
+                            disabled={!todo.isDone}
+                          >
+                            {value}
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        className="ghost-button"
+                        onClick={() => handleDelete(todo)}
+                      >
+                        삭제
+                      </button>
                     </div>
-                    <div className="time-input">
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={2}
-                        value={draft.endHour}
-                        onFocus={selectAllOnFocus}
-                        onChange={(event) =>
-                          handleEndChange(todo, event.target.value, draft.endMinute)
-                        }
-                        onBlur={() => handleEndBlur(todo)}
-                        placeholder="HH"
-                      />
-                      <span>:</span>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={2}
-                        value={draft.endMinute}
-                        onFocus={selectAllOnFocus}
-                        onChange={(event) =>
-                          handleEndChange(todo, draft.endHour, event.target.value)
-                        }
-                        onBlur={() => handleEndBlur(todo)}
-                        placeholder="MM"
-                      />
-                    </div>
-                    <input
-                      type="text"
-                      value={todo.title}
-                      ref={(el) => {
-                        titleInputRefs.current[todo.id] = el;
-                      }}
-                      onFocus={selectAllOnFocus}
-                      onChange={(event) => updateLocal(todo.id, { title: event.target.value })}
-                      onBlur={(event) => handleTitleBlur(todo, event.target.value)}
-                      required
-                    />
-                    <div className="checkbox-cell">
-                      <input
-                        type="checkbox"
-                        className="todo-checkbox"
-                        checked={todo.isDone}
-                        onChange={() => handleToggleDone(todo)}
-                      />
-                    </div>
-                    <div className={`percent-group ${todo.isDone ? '' : 'disabled'}`}>
-                      {PERCENT_OPTIONS.map((value) => (
-                        <button
-                          key={value}
-                          type="button"
-                          className={`percent-button ${todo.percent === value ? 'active' : ''}`}
-                          onClick={() => handlePercentSelect(todo, value)}
-                          disabled={!todo.isDone}
-                        >
-                          {value}
-                        </button>
-                      ))}
-                    </div>
-                    <button
-                      type="button"
-                      className="ghost-button"
-                      onClick={() => handleDelete(todo)}
-                    >
-                      삭제
-                    </button>
+                    {detailsOpenById[todo.id] && (
+                      <div className="todo-details">
+                        <textarea
+                          placeholder="상세 내용"
+                          value={todo.details ?? ''}
+                          onChange={(event) =>
+                            updateLocal(todo.id, { details: event.target.value })
+                          }
+                          onBlur={(event) => handleDetailsBlur(todo, event.target.value)}
+                        />
+                      </div>
+                    )}
                   </div>
-                  {detailsOpenById[todo.id] && (
-                    <div className="todo-details">
-                      <textarea
-                        placeholder="상세 내용"
-                        value={todo.details ?? ''}
-                        onChange={(event) => updateLocal(todo.id, { details: event.target.value })}
-                        onBlur={(event) => handleDetailsBlur(todo, event.target.value)}
-                      />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+          </section>
+          <div className="add-todo-wrapper">
+            <button
+              type="button"
+              className="add-todo-button"
+              onClick={handleAddTodo}
+              aria-label="새 TODO 추가"
+            >
+              +
+            </button>
           </div>
-        </section>
+        </>
       )}
 
       {isSettingsOpen && (

@@ -47,10 +47,26 @@ input[type='number'] {
   margin-bottom: 24px;
 }
 
-.app-header h1 {
+.app-title-button {
   margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
   font-size: 28px;
   letter-spacing: 0.4px;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+}
+
+.app-title-button:hover {
+  text-decoration: underline;
+}
+
+.app-title-button:focus-visible {
+  outline: 2px solid rgba(47, 138, 82, 0.4);
+  outline-offset: 4px;
+  border-radius: 6px;
 }
 
 .home {
@@ -437,6 +453,34 @@ input[type='number'] {
 .todo-details:focus-within {
   border-color: #c9d3e2;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.add-todo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.add-todo-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  border: none;
+  background: #dfe8ff;
+  color: #2f3c5a;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(47, 60, 90, 0.18);
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.add-todo-button:hover {
+  background: #cfdcff;
+}
+
+.add-todo-button:active {
+  transform: translateY(1px);
 }
 
 @media (max-width: 900px) {
