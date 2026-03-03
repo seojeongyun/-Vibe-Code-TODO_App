@@ -180,20 +180,26 @@ export async function updateTodo(
         ? normalizePercent(nextIsDone, current.percent)
         : 0;
 
-  const nextStart = normalizeTime(patch.startTime ?? patch.time ?? current.startTime);
-  const nextEnd = normalizeTime(patch.endTime ?? current.endTime);
-  const nextDetails = normalizeDetails(patch.details ?? current.details);
-
   const updated: Todo = {
     ...current,
-    startTime: nextStart,
-    endTime: nextEnd,
-    details: nextDetails,
-    title: patch.title?.trim() ?? current.title,
-    isDone: nextIsDone,
-    percent: nextPercent,
     updatedAt: nowIsoString(),
   };
+
+  if ('startTime' in patch || 'time' in patch) {
+    updated.startTime = normalizeTime(patch.startTime ?? patch.time);
+  }
+  if ('endTime' in patch) {
+    updated.endTime = normalizeTime(patch.endTime);
+  }
+  if ('details' in patch) {
+    updated.details = normalizeDetails(patch.details);
+  }
+  if ('title' in patch) {
+    updated.title = patch.title?.trim() ?? '';
+  }
+
+  updated.isDone = nextIsDone;
+  updated.percent = nextPercent;
 
   found.todos[found.index] = updated;
   await set(todosKey(found.date), found.todos, todoStore);

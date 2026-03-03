@@ -78,3 +78,10 @@ Python 사용 시:
 ## 출력 형식
 - 매 응답의 첫 줄에 한 줄 요약(한국어) 후, 필요 시 bullet로 상세를 쓴다.
 - 모호하면 추측하지 말고, 필요한 파일/근거를 먼저 확인한 뒤 한국어로 설명한다.
+
+## Backup Restore (2026-02-27 MVP)
+- tag: v0.1.0-mvp
+- branch: backup/mvp-2026-02-27
+- restore branch: git switch backup/mvp-2026-02-27
+- restore tag: git switch --detach v0.1.0-mvp
+- back to main: git switch main && git pull

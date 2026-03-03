@@ -313,7 +313,7 @@ input[type='number'] {
 
 .todo-row {
   display: grid;
-  grid-template-columns: 160px 160px 1fr 80px 240px 80px;
+  grid-template-columns: 28px 160px 160px 1fr 80px 240px 80px;
   align-items: center;
   gap: 12px;
   padding: 8px 4px;
@@ -337,7 +337,7 @@ input[type='number'] {
   justify-content: center;
 }
 
-.todo-row-header > div:nth-child(3) {
+.todo-row-header > div:nth-child(4) {
   justify-content: flex-start;
 }
 
@@ -391,15 +391,52 @@ input[type='number'] {
   border-color: #2f8a52;
 }
 
+.details-toggle {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #d6d0c5;
+  background: transparent;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 .percent-group.disabled {
   opacity: 0.5;
   pointer-events: none;
 }
 
+.todo-details {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 10px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
 .todo-details textarea {
   width: 100%;
-  min-height: 64px;
+  min-height: 100px;
   resize: vertical;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.todo-details textarea:focus {
+  outline: none;
+}
+
+.todo-details:focus-within {
+  border-color: #c9d3e2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 @media (max-width: 900px) {

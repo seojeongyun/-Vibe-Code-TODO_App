@@ -91,10 +91,13 @@ export default function App() {
   });
   const [timeDrafts, setTimeDrafts] = useState<Record<string, TimeDraft>>({});
   const [heatmapYear, setHeatmapYear] = useState<number>(monthState.year);
+  const [detailsOpenById, setDetailsOpenById] = useState<Record<string, boolean>>({});
+  const [lastCreatedTodoId, setLastCreatedTodoId] = useState<string | null>(null);
   const buildSha = import.meta.env.VITE_BUILD_SHA || 'dev';
   const buildTime = import.meta.env.VITE_BUILD_TIME || 'dev';
 
   const heatmapRef = useRef<HTMLDivElement | null>(null);
+  const titleInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const calendarWeeks = useMemo(
     () => getMonthMatrix(monthState.year, monthState.month),
@@ -128,6 +131,15 @@ export default function App() {
               endHour: end.hour,
               endMinute: end.minute,
             };
+          }
+        });
+        return next;
+      });
+      setDetailsOpenById((prev) => {
+        const next = { ...prev };
+        list.forEach((todo) => {
+          if (next[todo.id] === undefined) {
+            next[todo.id] = false;
           }
         });
         return next;
@@ -293,6 +305,11 @@ export default function App() {
       ...prev,
       [created.id]: { ...EMPTY_DRAFT },
     }));
+    setDetailsOpenById((prev) => ({
+      ...prev,
+      [created.id]: false,
+    }));
+    setLastCreatedTodoId(created.id);
     setDataRevision((v) => v + 1);
   };
 
@@ -333,6 +350,16 @@ export default function App() {
     updateLocal(todo.id, { details });
     await commitUpdate(todo.id, { details });
   };
+
+  useEffect(() => {
+    if (!lastCreatedTodoId) return;
+    const input = titleInputRefs.current[lastCreatedTodoId];
+    if (input) {
+      input.focus();
+      input.select();
+    }
+    setLastCreatedTodoId(null);
+  }, [lastCreatedTodoId, todos]);
 
   const handleStartChange = (todo: Todo, hour: string, minute: string) => {
     setTimeDrafts((prev) => ({
@@ -515,6 +542,7 @@ export default function App() {
 
           <div className="todo-table">
             <div className="todo-row todo-row-header">
+              <div></div>
               <div>시작시간</div>
               <div>끝시간</div>
               <div>할 일</div>
@@ -527,6 +555,19 @@ export default function App() {
               return (
                 <div key={todo.id} className="todo-block">
                   <div className="todo-row">
+                    <button
+                      type="button"
+                      className="details-toggle"
+                      onClick={() =>
+                        setDetailsOpenById((prev) => ({
+                          ...prev,
+                          [todo.id]: !prev[todo.id],
+                        }))
+                      }
+                      aria-label="상세 토글"
+                    >
+                      {detailsOpenById[todo.id] ? '▲' : '▼'}
+                    </button>
                     <div className="time-input">
                       <input
                         type="text"
@@ -584,6 +625,10 @@ export default function App() {
                     <input
                       type="text"
                       value={todo.title}
+                      ref={(el) => {
+                        titleInputRefs.current[todo.id] = el;
+                      }}
+                      onFocus={selectAllOnFocus}
                       onChange={(event) => updateLocal(todo.id, { title: event.target.value })}
                       onBlur={(event) => handleTitleBlur(todo, event.target.value)}
                       required
@@ -617,14 +662,16 @@ export default function App() {
                       삭제
                     </button>
                   </div>
-                  <div className="todo-details">
-                    <textarea
-                      placeholder="상세 내용"
-                      value={todo.details ?? ''}
-                      onChange={(event) => updateLocal(todo.id, { details: event.target.value })}
-                      onBlur={(event) => handleDetailsBlur(todo, event.target.value)}
-                    />
-                  </div>
+                  {detailsOpenById[todo.id] && (
+                    <div className="todo-details">
+                      <textarea
+                        placeholder="상세 내용"
+                        value={todo.details ?? ''}
+                        onChange={(event) => updateLocal(todo.id, { details: event.target.value })}
+                        onBlur={(event) => handleDetailsBlur(todo, event.target.value)}
+                      />
+                    </div>
+                  )}
                 </div>
               );
             })}
